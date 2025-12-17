@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ action }} Project - Cars24</title>
+    
+    <!-- TailwindCSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'c24-orange': '#F47920',
+                        'c24-dark-orange': '#E06810',
+                        'c24-dark': '#0F172A',
+                        'c24-gray': '#F8FAFC',
+                        'c24-blue': '#3B82F6',
+                        'c24-green': '#10B981',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-c24-gray">
+    
+    <!-- Navigation -->
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <a href="/" class="flex items-center">
+                    <div class="text-2xl font-black text-c24-orange">CARS24</div>
+                    <div class="ml-3 px-3 py-1 bg-c24-orange bg-opacity-10 rounded-full">
+                        <span class="text-xs font-bold text-c24-orange uppercase tracking-wide">Internal</span>
+                    </div>
+                </a>
+                <a href="/" class="text-sm font-semibold text-gray-700 hover:text-c24-orange transition">
+                    ← Back to Projects
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+                {% for category, message in messages %}
+                <div class="p-4 rounded-lg {% if category == 'success' %}bg-green-50 text-green-800{% else %}bg-red-50 text-red-800{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Form Container -->
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="bg-white rounded-xl border border-gray-200 shadow-lg p-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ action }} Project</h1>
+            <p class="text-gray-600 mb-8">Fill in the project details below. All fields marked with * are required.</p>
+
+            <form method="POST" id="projectForm">
+                
+                <!-- Basic Information -->
+                <div class="mb-8">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-c24-orange" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                            <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
+                        </svg>
+                        Basic Information
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Project Name *</label>
+                            <input type="text" name="name" required 
+                                   value="{{ project.name if project else '' }}"
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-c24-orange focus:border-transparent"
+                                   placeholder="e.g., Vehicle Inspection System">
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Project Summary *</label>
+                            <textarea name="summary" required rows="4"
+                                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-c24-orange focus:border-transparent"
+                                      placeholder="Provide a detailed summary of the project...">{{ project.summary if project else '' }}</textarea>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Product Manager *</label>
+                            <input type="text" name="product_manager" required
+                                   value="{{ project.product_manager if project else '' }}"
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-c24-orange focus:border-transparent"
+                                   placeholder="e.g., John Doe">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Business Vertical *</label>
+                            <select name="business_vertical" required
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-c24-orange focus:border-transparent">
+                                <option value="">Select Vertical</option>
+                                <option value="VAS" {% if project and project.business_vertical == 'VAS' %}selected{% endif %}>VAS</option>
+                                <option value="I2P" {% if project and project.business_vertical == 'I2P' %}selected{% endif %}>I2P</option>
+                                <option value="A2I" {% if project and project.business_vertical == 'A2I' %}selected{% endif %}>A2I</option>
+                                <option value="Challan" {% if project and project.business_vertical == 'Challan' %}selected{% endif %}>Challan</option>
+                            </select>
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Category *</label>
+                            <input type="text" name="category" required
+                                   value="{{ project.category if project else 'Product' }}"
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-c24-orange focus:border-transparent"
+                                   placeholder="e.g., Product, Platform, Service">
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Tags (comma-separated)</label>
+                            <input type="text" name="tags"
+                                   value="{{ project.tags|join(', ') if project else '' }}"
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-c24-orange focus:border-transparent"
+                                   placeholder="e.g., AI/ML, Mobile, Analytics">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Documents Section -->
+                <div class="mb-8">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-c24-orange" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 2a2 2 0 00-2 2v8a2 2 0 002 2h6a2 2 0 002-2V6.414A2 2 0 0016.414 5L14 2.586A2 2 0 0012.586 2H9z"></path>
+                            <path d="M3 8a2 2 0 012-2v10h8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"></path>
+                        </svg>
+                        Documents
+                    </h2>
+                    <p class="text-sm text-gray-600 mb-4">Add links to project documents. You can name them anything (PRD, BRD, TRD, Figma, etc.)</p>
+                    
+                    <div id="documentsContainer" class="space-y-3">
+                        {% if project and project.documents %}
+                            {% for key, doc in project.documents.items() %}
+                            <div class="document-row flex gap-3">
+                                <input type="text" name="doc_name" 
+                                       value="{{ doc.name if doc is mapping else key.upper() }}"
+                                       class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-c24-orange focus:border-transparent"
+                                       placeholder="Document Name (e.g., PRD, BRD, Figma)">
+                                <input type="url" name="doc_url" 
+                                       value="{{ doc.url if doc is mapping else doc }}"
+                                       class="flex-[2] px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-c24-orange focus:border-transparent"
+                                       placeholder="Document URL">
+                                <button type="button" onclick="removeDocument(this)" 
+                                        class="px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition">
+                                    Remove
+                                </button>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="document-row flex gap-3">
+                                <input type="text" name="doc_name" 
+                                       class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-c24-orange focus:border-transparent"
+                                       placeholder="Document Name (e.g., PRD, BRD, Figma)">
+                                <input type="url" name="doc_url" 
+                                       class="flex-[2] px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-c24-orange focus:border-transparent"
+                                       placeholder="Document URL">
+                                <button type="button" onclick="removeDocument(this)" 
+                                        class="px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition">
+                                    Remove
+                                </button>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <button type="button" onclick="addDocument()" 
+                            class="mt-4 px-4 py-2 bg-c24-orange text-white rounded-lg hover:bg-c24-dark-orange transition font-semibold">
+                        + Add Another Document
+                    </button>
+                </div>
+
+                <!-- Stakeholders Section -->
+                <div class="mb-8">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-c24-orange" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"></path>
+                        </svg>
+                        Team & Stakeholders
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Business Stakeholders -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Business Team</label>
+                            <div id="businessContainer" class="space-y-2">
+                                {% if project and project.stakeholders.business %}
+                                    {% for person in project.stakeholders.business %}
+                                    <div class="stakeholder-row flex gap-2">
+                                        <input type="text" name="business_stakeholders" 
+                                               value="{{ person }}"
+                                               class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                                               placeholder="Name (Role)">
+                                        <button type="button" onclick="removeStakeholder(this)" 
+                                                class="px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg text-sm">×</button>
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="stakeholder-row flex gap-2">
+                                        <input type="text" name="business_stakeholders" 
+                                               class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                                               placeholder="Name (Role)">
+                                        <button type="button" onclick="removeStakeholder(this)" 
+                                                class="px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg text-sm">×</button>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <button type="button" onclick="addStakeholder('businessContainer', 'business_stakeholders')" 
+                                    class="mt-2 text-sm text-c24-orange font-semibold hover:underline">+ Add Business Member</button>
+                        </div>
+
+                        <!-- Product Team -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Product Team</label>
+                            <div id="productContainer" class="space-y-2">
+                                {% if project and project.stakeholders.product %}
+                                    {% for person in project.stakeholders.product %}
+                                    <div class="stakeholder-row flex gap-2">
+                                        <input type="text" name="product_stakeholders" 
+                                               value="{{ person }}"
+                                               class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                                               placeholder="Name (Role)">
+                                        <button type="button" onclick="removeStakeholder(this)" 
+                                                class="px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg text-sm">×</button>
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="stakeholder-row flex gap-2">
+                                        <input type="text" name="product_stakeholders" 
+                                               class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                                               placeholder="Name (Role)">
+                                        <button type="button" onclick="removeStakeholder(this)" 
+                                                class="px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg text-sm">×</button>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <button type="button" onclick="addStakeholder('productContainer', 'product_stakeholders')" 
+                                    class="mt-2 text-sm text-c24-orange font-semibold hover:underline">+ Add Product Member</button>
+                        </div>
+
+                        <!-- Design Team -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Design Team</label>
+                            <div id="designContainer" class="space-y-2">
+                                {% if project and project.stakeholders.design %}
+                                    {% for person in project.stakeholders.design %}
+                                    <div class="stakeholder-row flex gap-2">
+                                        <input type="text" name="design_stakeholders" 
+                                               value="{{ person }}"
+                                               class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                                               placeholder="Name (Role)">
+                                        <button type="button" onclick="removeStakeholder(this)" 
+                                                class="px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg text-sm">×</button>
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="stakeholder-row flex gap-2">
+                                        <input type="text" name="design_stakeholders" 
+                                               class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                                               placeholder="Name (Role)">
+                                        <button type="button" onclick="removeStakeholder(this)" 
+                                                class="px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg text-sm">×</button>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <button type="button" onclick="addStakeholder('designContainer', 'design_stakeholders')" 
+                                    class="mt-2 text-sm text-c24-orange font-semibold hover:underline">+ Add Design Member</button>
+                        </div>
+
+                        <!-- Engineering Team -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Engineering Team</label>
+                            <div id="engineeringContainer" class="space-y-2">
+                                {% if project and project.stakeholders.engineering %}
+                                    {% for person in project.stakeholders.engineering %}
+                                    <div class="stakeholder-row flex gap-2">
+                                        <input type="text" name="engineering_stakeholders" 
+                                               value="{{ person }}"
+                                               class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                                               placeholder="Name (Role)">
+                                        <button type="button" onclick="removeStakeholder(this)" 
+                                                class="px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg text-sm">×</button>
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="stakeholder-row flex gap-2">
+                                        <input type="text" name="engineering_stakeholders" 
+                                               class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                                               placeholder="Name (Role)">
+                                        <button type="button" onclick="removeStakeholder(this)" 
+                                                class="px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg text-sm">×</button>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <button type="button" onclick="addStakeholder('engineeringContainer', 'engineering_stakeholders')" 
+                                    class="mt-2 text-sm text-c24-orange font-semibold hover:underline">+ Add Engineering Member</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200">
+                    <button type="submit" 
+                            class="flex-1 px-6 py-3 bg-c24-orange text-white font-bold rounded-lg hover:bg-c24-dark-orange transition shadow-md hover:shadow-lg">
+                        {{ action }} Project
+                    </button>
+                    <a href="/" 
+                       class="flex-1 px-6 py-3 bg-gray-100 text-gray-700 font-bold rounded-lg hover:bg-gray-200 transition text-center border-2 border-gray-300">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Add new document row
+        function addDocument() {
+            const container = document.getElementById('documentsContainer');
+            const newRow = document.createElement('div');
+            newRow.className = 'document-row flex gap-3';
+            newRow.innerHTML = `
+                <input type="text" name="doc_name" 
+                       class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-c24-orange focus:border-transparent"
+                       placeholder="Document Name (e.g., PRD, BRD, Figma)">
+                <input type="url" name="doc_url" 
+                       class="flex-[2] px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-c24-orange focus:border-transparent"
+                       placeholder="Document URL">
+                <button type="button" onclick="removeDocument(this)" 
+                        class="px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition">
+                    Remove
+                </button>
+            `;
+            container.appendChild(newRow);
+        }
+
+        // Remove document row
+        function removeDocument(button) {
+            button.parentElement.remove();
+        }
+
+        // Add stakeholder
+        function addStakeholder(containerId, inputName) {
+            const container = document.getElementById(containerId);
+            const newRow = document.createElement('div');
+            newRow.className = 'stakeholder-row flex gap-2';
+            newRow.innerHTML = `
+                <input type="text" name="${inputName}" 
+                       class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                       placeholder="Name (Role)">
+                <button type="button" onclick="removeStakeholder(this)" 
+                        class="px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg text-sm">×</button>
+            `;
+            container.appendChild(newRow);
+        }
+
+        // Remove stakeholder
+        function removeStakeholder(button) {
+            button.parentElement.remove();
+        }
+    </script>
+
+</body>
+</html>

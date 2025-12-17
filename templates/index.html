@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cars24 Product Documentation Portal</title>
+    <meta name="description" content="Internal product documentation portal for Cars24 teams">
+    
+    <!-- TailwindCSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom Tailwind Configuration with Cars24 Brand Colors -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'c24-primary': '#5546FF',
+                        'c24-primary-dark': '#4435DD',
+                        'c24-primary-light': '#6B5FFF',
+                        'c24-navy': '#1E3A8A',
+                        'c24-dark': '#0F172A',
+                        'c24-gray': '#F8FAFC',
+                        'c24-blue': '#3B82F6',
+                        'c24-green': '#10B981',
+                        'c24-red': '#EF4444',
+                        'c24-yellow': '#F59E0B',
+                    },
+                    fontFamily: {
+                        'geist': ['Geist', 'Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Geist Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: 'Geist';
+            src: url('https://cdn.jsdelivr.net/npm/geist@1.0.0/dist/fonts/geist-sans/Geist-Regular.woff2') format('woff2');
+            font-weight: 400;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Geist';
+            src: url('https://cdn.jsdelivr.net/npm/geist@1.0.0/dist/fonts/geist-sans/Geist-Medium.woff2') format('woff2');
+            font-weight: 500;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Geist';
+            src: url('https://cdn.jsdelivr.net/npm/geist@1.0.0/dist/fonts/geist-sans/Geist-SemiBold.woff2') format('woff2');
+            font-weight: 600;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Geist';
+            src: url('https://cdn.jsdelivr.net/npm/geist@1.0.0/dist/fonts/geist-sans/Geist-Bold.woff2') format('woff2');
+            font-weight: 700;
+            font-style: normal;
+        }
+    </style>
+    
+    <style>
+        body {
+            font-family: 'Geist', 'Inter', system-ui, sans-serif;
+        }
+        
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(85, 70, 255, 0.15), 0 10px 10px -5px rgba(85, 70, 255, 0.08);
+        }
+        
+        .gradient-primary {
+            background: linear-gradient(135deg, #5546FF 0%, #4435DD 100%);
+        }
+        
+        .gradient-navy {
+            background: linear-gradient(135deg, #1E3A8A 0%, #1E40AF 100%);
+        }
+        
+        .badge-hover {
+            transition: all 0.2s ease;
+        }
+        
+        .badge-hover:hover {
+            transform: scale(1.05);
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.6s ease-out forwards;
+            opacity: 1 !important;
+        }
+        
+        .stagger-1 { animation-delay: 0.1s; opacity: 1; }
+        .stagger-2 { animation-delay: 0.2s; opacity: 1; }
+        .stagger-3 { animation-delay: 0.3s; opacity: 1; }
+        .stagger-4 { animation-delay: 0.4s; opacity: 1; }
+        .stagger-5 { animation-delay: 0.5s; opacity: 1; }
+        .stagger-6 { animation-delay: 0.6s; opacity: 1; }
+        
+        .vertical-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+        }
+    </style>
+</head>
+<body class="bg-c24-gray">
+    
+    <!-- Navigation Bar -->
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-8">
+                    <div class="flex items-center">
+                        <!-- Cars24 Logo -->
+                        <img src="{{ url_for('static', filename='Logo.png') }}" alt="Cars24" class="h-8">
+                        <div class="ml-3 px-3 py-1 bg-c24-primary bg-opacity-10 rounded-full">
+                            <span class="text-xs font-bold text-c24-primary uppercase tracking-wide">Internal</span>
+                        </div>
+                    </div>
+                    <div class="hidden md:flex items-center space-x-1">
+                        <a href="#projects" class="px-4 py-2 text-sm font-semibold text-gray-700 hover:text-c24-primary hover:bg-purple-50 rounded-lg transition">
+                            Projects
+                        </a>
+                        <a href="https://github.com/CSPL-CARS24" target="_blank" class="px-4 py-2 text-sm font-semibold text-gray-700 hover:text-c24-primary hover:bg-purple-50 rounded-lg transition">
+                            GitHub
+                        </a>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="hidden md:flex items-center space-x-2 px-3 py-1.5 bg-green-50 rounded-lg">
+                        <span class="h-2 w-2 bg-c24-green rounded-full animate-pulse"></span>
+                        <span class="text-xs font-semibold text-green-700">{{ projects|length }} Projects</span>
+                    </div>
+                    <a href="/project/new" class="px-4 py-2 bg-c24-primary text-white font-semibold rounded-lg hover:bg-c24-primary-dark transition shadow-md hover:shadow-lg flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        New Project
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="gradient-primary text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <div class="inline-flex items-center px-4 py-2 bg-white bg-opacity-20 rounded-full mb-6">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"></path>
+                    </svg>
+                    <span class="text-sm font-bold">Product Documentation Portal</span>
+                </div>
+                <h1 class="text-4xl md:text-5xl font-black mb-4">
+                    Cars24 Product Projects
+                </h1>
+                <p class="text-lg md:text-xl text-purple-100 max-w-2xl mx-auto">
+                    Centralized hub for PRDs, BRDs, TRDs, designs, and stakeholder information
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="py-12 bg-c24-gray">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <!-- Section Header with Search -->
+            <div class="mb-8">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+                    <div>
+                        <h2 class="text-3xl font-bold text-gray-900 mb-2">Active Projects</h2>
+                        <p class="text-gray-600">Browse all active engineering projects by business vertical</p>
+                    </div>
+                    <div class="mt-4 md:mt-0">
+                        <span class="text-sm font-semibold text-gray-600">
+                            <span id="projectCount">{{ projects|length }}</span> projects found
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Search and Filter Bar -->
+                <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <!-- Search Input -->
+                        <div class="flex-1">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Search Projects</label>
+                            <div class="relative">
+                                <input type="text" id="searchInput" 
+                                       placeholder="Search by name, summary, PM, or tags..."
+                                       class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-c24-primary focus:border-transparent">
+                                <svg class="absolute left-3 top-3 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <!-- Business Vertical Filter -->
+                        <div class="w-full md:w-48">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Business Vertical</label>
+                            <select id="verticalFilter" 
+                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-c24-primary focus:border-transparent">
+                                <option value="">All Verticals</option>
+                                <option value="VAS">VAS</option>
+                                <option value="I2P">I2P</option>
+                                <option value="A2I">A2I</option>
+                                <option value="Challan">Challan</option>
+                            </select>
+                        </div>
+
+                        <!-- Clear Button -->
+                        <div class="w-full md:w-32 flex items-end">
+                            <button id="clearFilters" 
+                                    class="w-full px-4 py-2.5 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition border-2 border-gray-300">
+                                <span class="flex items-center justify-center">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                    Clear
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tag Filter Pills -->
+                    <div class="mt-4 pt-4 border-t border-gray-200">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Filter by Tags</label>
+                        <div id="tagFilters" class="flex flex-wrap gap-2">
+                            <!-- Tags will be dynamically generated -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- No Results Message -->
+            <div id="noResults" class="hidden text-center py-12">
+                <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">No projects found</h3>
+                <p class="text-gray-600">Try adjusting your search or filters</p>
+            </div>
+
+            <!-- Project Cards Grid -->
+            <div id="projectsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for project in projects %}
+                <div class="bg-white rounded-xl border border-gray-200 overflow-hidden card-hover animate-fade-in stagger-{{ loop.index }} h-[480px] flex flex-col">
+                    
+                    <!-- Card Header with Business Vertical -->
+                    <div class="relative bg-gradient-to-r from-c24-primary to-c24-primary-dark p-4 flex-shrink-0">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <div class="inline-flex items-center px-3 py-1 bg-white bg-opacity-90 rounded-full mb-2">
+                                    <span class="vertical-badge text-c24-primary uppercase">{{ project.business_vertical }}</span>
+                                </div>
+                                <h3 class="text-lg font-bold text-white leading-tight">
+                                    {{ project.name }}
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card Body -->
+                    <div class="p-5 flex-grow flex flex-col overflow-hidden">
+                        <!-- Description -->
+                        <p class="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed flex-shrink-0">
+                            {{ project.summary }}
+                        </p>
+
+                        <!-- Product Manager -->
+                        <div class="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-100">
+                            <div class="flex items-center space-x-2">
+                                <svg class="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                                </svg>
+                                <div>
+                                    <div class="text-xs text-gray-500 font-medium">Product Manager</div>
+                                    <div class="text-sm font-semibold text-gray-900">{{ project.product_manager }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Document Links -->
+                        <div class="mb-4">
+                            <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Documents</div>
+                            <div class="flex flex-wrap gap-2 max-h-20 overflow-hidden">
+                                {% set all_docs = project.core_docs + project.design_docs + project.analytics_docs + project.other_docs %}
+                                {% for doc in all_docs[:4] %}
+                                {% set colors = [('blue', 'blue'), ('green', 'green'), ('purple', 'purple'), ('pink', 'pink'), ('indigo', 'indigo'), ('orange', 'orange')] %}
+                                {% set color_pair = colors[loop.index0 % colors|length] %}
+                                <a href="{{ doc.url }}" target="_blank" class="px-2.5 py-1 bg-{{ color_pair[0] }}-50 text-{{ color_pair[1] }}-700 text-xs font-semibold rounded hover:bg-{{ color_pair[0] }}-100 transition">
+                                    {{ doc.name }}
+                                </a>
+                                {% endfor %}
+                                {% if all_docs|length > 4 %}
+                                <span class="px-2.5 py-1 bg-gray-100 text-gray-600 text-xs font-semibold rounded">
+                                    +{{ all_docs|length - 4 }} more
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Tech Tags -->
+                        <div class="flex flex-wrap gap-2 mb-4 max-h-16 overflow-hidden">
+                            {% for tag in project.tags[:4] %}
+                            <span class="badge-hover px-2.5 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-md border border-gray-200">
+                                {{ tag }}
+                            </span>
+                            {% endfor %}
+                            {% if project.tags|length > 4 %}
+                            <span class="px-2.5 py-1 bg-gray-200 text-gray-600 text-xs font-semibold rounded-md border border-gray-300">
+                                +{{ project.tags|length - 4 }} more
+                            </span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Action Button -->
+                        <a href="/project/{{ project.id }}" class="block w-full text-center px-4 py-2.5 bg-c24-primary text-white font-semibold rounded-lg hover:bg-c24-primary-dark transition-colors group mt-auto flex-shrink-0">
+                            <span class="flex items-center justify-center">
+                                View Full Details
+                                <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </span>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-c24-dark text-white py-10 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-3 gap-8 mb-8">
+                <div>
+                    <h3 class="text-xl font-black mb-3 text-c24-primary">CARS24</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Internal product documentation portal for Cars24 product and engineering teams.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-3 text-sm uppercase tracking-wide">Quick Links</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#projects" class="text-gray-400 hover:text-c24-primary transition">Projects</a></li>
+                        <li><a href="https://github.com/CSPL-CARS24" target="_blank" class="text-gray-400 hover:text-c24-primary transition">GitHub Organization</a></li>
+                        <li><a href="https://www.cars24.com" target="_blank" class="text-gray-400 hover:text-c24-primary transition">Cars24 Website</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-3 text-sm uppercase tracking-wide">Business Verticals</h4>
+                    <div id="footerVerticals" class="flex flex-wrap gap-2">
+                        <!-- Dynamically loaded verticals -->
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 pt-6 text-center">
+                <p class="text-gray-400 text-sm">
+                    &copy; 2024 Cars24. Internal Use Only. Built by the Engineering Team.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Store all projects data
+        const allProjects = {{ projects|tojson }};
+        let selectedTags = new Set();
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            generateTagFilters();
+            attachEventListeners();
+            loadBusinessVerticals();
+        });
+
+        // Generate tag filter pills
+        function generateTagFilters() {
+            const tagFiltersContainer = document.getElementById('tagFilters');
+            const allTags = new Set();
+            
+            // Collect all unique tags
+            allProjects.forEach(project => {
+                if (project.tags) {
+                    project.tags.forEach(tag => allTags.add(tag));
+                }
+            });
+
+            // Create tag pills
+            allTags.forEach(tag => {
+                const tagPill = document.createElement('button');
+                tagPill.className = 'tag-filter px-3 py-1.5 bg-gray-100 text-gray-700 text-sm font-medium rounded-full hover:bg-c24-primary hover:text-white transition';
+                tagPill.textContent = tag;
+                tagPill.dataset.tag = tag;
+                tagPill.onclick = () => toggleTag(tag, tagPill);
+                tagFiltersContainer.appendChild(tagPill);
+            });
+        }
+
+        // Toggle tag selection
+        function toggleTag(tag, element) {
+            if (selectedTags.has(tag)) {
+                selectedTags.delete(tag);
+                element.classList.remove('bg-c24-primary', 'text-white');
+                element.classList.add('bg-gray-100', 'text-gray-700');
+            } else {
+                selectedTags.add(tag);
+                element.classList.remove('bg-gray-100', 'text-gray-700');
+                element.classList.add('bg-c24-primary', 'text-white');
+            }
+            filterProjects();
+        }
+
+        // Attach event listeners
+        function attachEventListeners() {
+            document.getElementById('searchInput').addEventListener('input', filterProjects);
+            document.getElementById('verticalFilter').addEventListener('change', filterProjects);
+            document.getElementById('clearFilters').addEventListener('click', clearAllFilters);
+        }
+
+        // Main filter function
+        function filterProjects() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const verticalFilter = document.getElementById('verticalFilter').value;
+
+            const filteredProjects = allProjects.filter(project => {
+                // Search filter - includes name, summary, PM, and tags
+                const tagsText = project.tags ? project.tags.join(' ').toLowerCase() : '';
+                const matchesSearch = !searchTerm || 
+                    project.name.toLowerCase().includes(searchTerm) ||
+                    project.summary.toLowerCase().includes(searchTerm) ||
+                    project.product_manager.toLowerCase().includes(searchTerm) ||
+                    tagsText.includes(searchTerm);
+
+                // Vertical filter
+                const matchesVertical = !verticalFilter || project.business_vertical === verticalFilter;
+
+                // Tag filter
+                const matchesTags = selectedTags.size === 0 || 
+                    (project.tags && project.tags.some(tag => selectedTags.has(tag)));
+
+                return matchesSearch && matchesVertical && matchesTags;
+            });
+
+            displayProjects(filteredProjects);
+            updateProjectCount(filteredProjects.length);
+        }
+
+        // Display filtered projects
+        function displayProjects(projects) {
+            const grid = document.getElementById('projectsGrid');
+            const noResults = document.getElementById('noResults');
+
+            if (projects.length === 0) {
+                grid.classList.add('hidden');
+                noResults.classList.remove('hidden');
+                return;
+            }
+
+            grid.classList.remove('hidden');
+            noResults.classList.add('hidden');
+            grid.innerHTML = '';
+
+            projects.forEach(project => {
+                const card = createProjectCard(project);
+                grid.appendChild(card);
+            });
+        }
+
+        // Create project card HTML
+        function createProjectCard(project) {
+            const card = document.createElement('div');
+            card.className = 'bg-white rounded-xl border border-gray-200 overflow-hidden card-hover h-[480px] flex flex-col';
+            
+            // Generate document links
+            let docLinks = '';
+            const allDocs = [
+                ...(project.core_docs || []),
+                ...(project.design_docs || []),
+                ...(project.analytics_docs || []),
+                ...(project.other_docs || [])
+            ];
+            
+            if (allDocs.length > 0) {
+                const colors = [
+                    ['blue', 'blue'], ['green', 'green'], ['purple', 'purple'], 
+                    ['pink', 'pink'], ['indigo', 'indigo'], ['orange', 'orange']
+                ];
+                const displayDocs = allDocs.slice(0, 4);
+                displayDocs.forEach((doc, index) => {
+                    const colorPair = colors[index % colors.length];
+                    docLinks += `<a href="${doc.url}" target="_blank" class="px-2.5 py-1 bg-${colorPair[0]}-50 text-${colorPair[1]}-700 text-xs font-semibold rounded hover:bg-${colorPair[0]}-100 transition">${doc.name}</a>`;
+                });
+                if (allDocs.length > 4) {
+                    docLinks += `<span class="px-2.5 py-1 bg-gray-100 text-gray-600 text-xs font-semibold rounded">+${allDocs.length - 4} more</span>`;
+                }
+            }
+
+            // Generate tags
+            let tags = '';
+            if (project.tags && project.tags.length > 0) {
+                const displayTags = project.tags.slice(0, 4);
+                displayTags.forEach(tag => {
+                    tags += `<span class="badge-hover px-2.5 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-md border border-gray-200">${tag}</span>`;
+                });
+                if (project.tags.length > 4) {
+                    tags += `<span class="px-2.5 py-1 bg-gray-200 text-gray-600 text-xs font-semibold rounded-md border border-gray-300">+${project.tags.length - 4} more</span>`;
+                }
+            }
+
+            card.innerHTML = `
+                <div class="relative bg-gradient-to-r from-c24-primary to-c24-primary-dark p-4 flex-shrink-0">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <div class="inline-flex items-center px-3 py-1 bg-white bg-opacity-90 rounded-full mb-2">
+                                <span class="vertical-badge text-c24-primary uppercase">${project.business_vertical}</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-white leading-tight">${project.name}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-5 flex-grow flex flex-col overflow-hidden">
+                    <p class="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed flex-shrink-0">${project.summary}</p>
+                    <div class="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-100">
+                        <div class="flex items-center space-x-2">
+                            <svg class="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                            </svg>
+                            <div>
+                                <div class="text-xs text-gray-500 font-medium">Product Manager</div>
+                                <div class="text-sm font-semibold text-gray-900">${project.product_manager}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Documents</div>
+                        <div class="flex flex-wrap gap-2 max-h-20 overflow-hidden">${docLinks}</div>
+                    </div>
+                    <div class="flex flex-wrap gap-2 mb-4 max-h-16 overflow-hidden">${tags}</div>
+                    <a href="/project/${project.id}" class="block w-full text-center px-4 py-2.5 bg-c24-primary text-white font-semibold rounded-lg hover:bg-c24-primary-dark transition-colors group mt-auto flex-shrink-0">
+                        <span class="flex items-center justify-center">
+                            View Full Details
+                            <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </span>
+                    </a>
+                </div>
+            `;
+            return card;
+        }
+
+        // Update project count
+        function updateProjectCount(count) {
+            document.getElementById('projectCount').textContent = count;
+        }
+
+        // Clear all filters
+        function clearAllFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('verticalFilter').value = '';
+            
+            // Clear tag selections
+            selectedTags.clear();
+            document.querySelectorAll('.tag-filter').forEach(tag => {
+                tag.classList.remove('bg-c24-primary', 'text-white');
+                tag.classList.add('bg-gray-100', 'text-gray-700');
+            });
+
+            filterProjects();
+        }
+
+        // Load business verticals dynamically
+        async function loadBusinessVerticals() {
+            try {
+                const response = await fetch('/api/business-verticals');
+                const data = await response.json();
+                const container = document.getElementById('footerVerticals');
+                
+                if (data.verticals && data.verticals.length > 0) {
+                    const colors = [
+                        { bg: 'bg-c24-primary', text: 'text-c24-primary' },
+                        { bg: 'bg-c24-blue', text: 'text-c24-blue' },
+                        { bg: 'bg-c24-green', text: 'text-c24-green' },
+                        { bg: 'bg-c24-yellow', text: 'text-c24-yellow' },
+                        { bg: 'bg-purple-500', text: 'text-purple-500' },
+                        { bg: 'bg-pink-500', text: 'text-pink-500' },
+                        { bg: 'bg-indigo-500', text: 'text-indigo-500' }
+                    ];
+                    
+                    container.innerHTML = data.verticals.map((vertical, index) => {
+                        const color = colors[index % colors.length];
+                        return `<span class="px-3 py-1 ${color.bg} bg-opacity-20 ${color.text} text-xs font-bold rounded-full">${vertical}</span>`;
+                    }).join('');
+                } else {
+                    container.innerHTML = '<span class="text-gray-400 text-xs">No verticals yet</span>';
+                }
+            } catch (error) {
+                console.error('Error loading business verticals:', error);
+                document.getElementById('footerVerticals').innerHTML = '<span class="text-gray-400 text-xs">Error loading verticals</span>';
+            }
+        }
+    </script>
+
+</body>
+</html>
