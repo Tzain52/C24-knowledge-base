@@ -625,6 +625,27 @@
                 document.getElementById('footerVerticals').innerHTML = '<span class="text-gray-400 text-xs">Error loading verticals</span>';
             }
         }
+
+        // Load business verticals into dropdown filter
+        async function loadBusinessVerticalsDropdown() {
+            try {
+                const response = await fetch('/api/business-verticals');
+                const data = await response.json();
+                const dropdown = document.getElementById('verticalFilter');
+                
+                if (data.verticals && data.verticals.length > 0) {
+                    // Keep the "All Verticals" option and add dynamic ones
+                    data.verticals.forEach(vertical => {
+                        const option = document.createElement('option');
+                        option.value = vertical;
+                        option.textContent = vertical;
+                        dropdown.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading business verticals for dropdown:', error);
+            }
+        }
     </script>
 
 </body>
