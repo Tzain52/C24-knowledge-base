@@ -142,10 +142,7 @@
                                         onchange="toggleCustomVertical()"
                                         onkeydown="if(event.key === 'Enter') { event.preventDefault(); return false; }">
                                     <option value="">Select Vertical</option>
-                                    <option value="VAS" {% if project and project.business_vertical == 'VAS' %}selected{% endif %}>VAS</option>
-                                    <option value="I2P" {% if project and project.business_vertical == 'I2P' %}selected{% endif %}>I2P</option>
-                                    <option value="A2I" {% if project and project.business_vertical == 'A2I' %}selected{% endif %}>A2I</option>
-                                    <option value="Challan" {% if project and project.business_vertical == 'Challan' %}selected{% endif %}>Challan</option>
+                                    <!-- Dynamically loaded options -->
                                     <option value="__custom__">➕ Add New Vertical...</option>
                                 </select>
                                 <input type="text" id="customVerticalInput" name="custom_vertical"
@@ -538,6 +535,34 @@
                 newOption.value = customInput.value.trim();
                 newOption.selected = true;
                 select.appendChild(newOption);
+            }
+        });
+
+        // Load business verticals dynamically on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                const response = await fetch('/api/business-verticals');
+                const data = await response.json();
+                const select = document.getElementById('businessVerticalSelect');
+                const currentValue = '{{ project.business_vertical if project else "" }}';
+                
+                if (data.verticals && data.verticals.length > 0) {
+                    // Get the "Add New Vertical" option
+                    const customOption = select.querySelector('option[value="__custom__"]');
+                    
+                    // Add dynamic options before the custom option
+                    data.verticals.forEach(vertical => {
+                        const option = document.createElement('option');
+                        option.value = vertical;
+                        option.textContent = vertical;
+                        if (vertical === currentValue) {
+                            option.selected = true;
+                        }
+                        select.insertBefore(option, customOption);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading business verticals:', error);
             }
         });
     </script>
