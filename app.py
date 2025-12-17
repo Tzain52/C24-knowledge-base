@@ -56,9 +56,15 @@ def get_document_embed_info(url):
 def doc_embed_filter(url):
     return get_document_embed_info(url)
 
-# SQLite Database Configuration
+# Database Configuration - supports both SQLite (local) and PostgreSQL (production)
 basedir = os.path.abspath(os.path.dirname(__file__))
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(basedir, "projects.db")}'
+database_url = os.environ.get('DATABASE_URL', f'sqlite:///{os.path.join(basedir, "projects.db")}')
+
+# Render uses postgres:// but SQLAlchemy needs postgresql://
+if database_url.startswith('postgres://'):
+    database_url = database_url.replace('postgres://', 'postgresql://', 1)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize database
