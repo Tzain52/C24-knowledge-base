@@ -222,10 +222,7 @@
                             <select id="verticalFilter" 
                                     class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-c24-primary focus:border-transparent">
                                 <option value="">All Verticals</option>
-                                <option value="VAS">VAS</option>
-                                <option value="I2P">I2P</option>
-                                <option value="A2I">A2I</option>
-                                <option value="Challan">Challan</option>
+                                <!-- Dynamically loaded options -->
                             </select>
                         </div>
 
@@ -378,7 +375,7 @@
             </div>
             <div class="border-t border-gray-800 pt-6 text-center">
                 <p class="text-gray-400 text-sm">
-                    &copy; 2024 Cars24. Internal Use Only. Built by the Engineering Team.
+                    &copy; 2025 Cars24. Internal Use Only.
                 </p>
             </div>
         </div>
@@ -399,17 +396,25 @@
         // Generate tag filter pills
         function generateTagFilters() {
             const tagFiltersContainer = document.getElementById('tagFilters');
-            const allTags = new Set();
+            const tagCounts = {};
             
-            // Collect all unique tags
+            // Count tag frequency
             allProjects.forEach(project => {
                 if (project.tags) {
-                    project.tags.forEach(tag => allTags.add(tag));
+                    project.tags.forEach(tag => {
+                        tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+                    });
                 }
             });
 
+            // Sort tags by frequency and take top 25
+            const sortedTags = Object.entries(tagCounts)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 25)
+                .map(entry => entry[0]);
+
             // Create tag pills
-            allTags.forEach(tag => {
+            sortedTags.forEach(tag => {
                 const tagPill = document.createElement('button');
                 tagPill.className = 'tag-filter px-3 py-1.5 bg-gray-100 text-gray-700 text-sm font-medium rounded-full hover:bg-c24-primary hover:text-white transition';
                 tagPill.textContent = tag;

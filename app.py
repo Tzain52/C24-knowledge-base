@@ -117,12 +117,12 @@ def new_project():
             all_projects = Project.query.order_by(Project.name).all()
             return render_template('project_form.html', project=None, action='Create', all_projects=all_projects)
         
-        # Collect project data
+        # Collect project data (strip whitespace)
         project_data = {
-            'name': project_name,
-            'summary': request.form.get('summary'),
-            'business_vertical': request.form.get('business_vertical'),
-            'product_manager': request.form.get('product_manager'),
+            'name': project_name.strip() if project_name else '',
+            'summary': request.form.get('summary', '').strip(),
+            'business_vertical': request.form.get('business_vertical', '').strip(),
+            'product_manager': request.form.get('product_manager', '').strip(),
             'stakeholders': {
                 'business': [],
                 'product': [],
@@ -136,15 +136,15 @@ def new_project():
             'tags': [tag.strip() for tag in request.form.get('tags', '').split(',') if tag.strip()]
         }
         
-        # Process stakeholders with emails
+        # Process stakeholders with emails (strip whitespace)
         for role in ['business', 'product', 'design', 'engineering']:
             names = request.form.getlist(f'{role}_stakeholder_name')
             emails = request.form.getlist(f'{role}_stakeholder_email')
             for name, email in zip(names, emails):
-                if name:
+                if name and name.strip():
                     project_data['stakeholders'][role].append({
-                        'name': name,
-                        'email': email if email else ''
+                        'name': name.strip(),
+                        'email': email.strip() if email else ''
                     })
         
         # Process documents by category
@@ -154,7 +154,7 @@ def new_project():
         
         for category, name, url in zip(doc_categories, doc_names, doc_urls):
             if name and url:
-                doc_obj = {'name': name, 'url': url}
+                doc_obj = {'name': name.strip(), 'url': url.strip()}
                 if category == 'core':
                     project_data['core_docs'].append(doc_obj)
                 elif category == 'design':
@@ -197,12 +197,12 @@ def edit_project(project_id):
             all_projects = Project.query.filter(Project.id != project_id).order_by(Project.name).all()
             return render_template('project_form.html', project=project.to_dict(), action='Edit', all_projects=all_projects)
         
-        # Collect updated data
+        # Collect updated data (strip whitespace)
         updated_data = {
-            'name': project_name,
-            'summary': request.form.get('summary'),
-            'business_vertical': request.form.get('business_vertical'),
-            'product_manager': request.form.get('product_manager'),
+            'name': project_name.strip() if project_name else '',
+            'summary': request.form.get('summary', '').strip(),
+            'business_vertical': request.form.get('business_vertical', '').strip(),
+            'product_manager': request.form.get('product_manager', '').strip(),
             'stakeholders': {
                 'business': [],
                 'product': [],
@@ -216,15 +216,15 @@ def edit_project(project_id):
             'tags': [tag.strip() for tag in request.form.get('tags', '').split(',') if tag.strip()]
         }
         
-        # Process stakeholders with emails
+        # Process stakeholders with emails (strip whitespace)
         for role in ['business', 'product', 'design', 'engineering']:
             names = request.form.getlist(f'{role}_stakeholder_name')
             emails = request.form.getlist(f'{role}_stakeholder_email')
             for name, email in zip(names, emails):
-                if name:
+                if name and name.strip():
                     updated_data['stakeholders'][role].append({
-                        'name': name,
-                        'email': email if email else ''
+                        'name': name.strip(),
+                        'email': email.strip() if email else ''
                     })
         
         # Process documents by category
@@ -234,7 +234,7 @@ def edit_project(project_id):
         
         for category, name, url in zip(doc_categories, doc_names, doc_urls):
             if name and url:
-                doc_obj = {'name': name, 'url': url}
+                doc_obj = {'name': name.strip(), 'url': url.strip()}
                 if category == 'core':
                     updated_data['core_docs'].append(doc_obj)
                 elif category == 'design':
