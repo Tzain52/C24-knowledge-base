@@ -216,16 +216,6 @@
                             </div>
                         </div>
 
-                        <!-- Business Vertical Filter -->
-                        <div class="w-full md:w-48">
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">Business Vertical</label>
-                            <select id="verticalFilter" 
-                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-c24-primary focus:border-transparent">
-                                <option value="">All Verticals</option>
-                                <!-- Dynamically loaded options -->
-                            </select>
-                        </div>
-
                         <!-- Clear Button -->
                         <div class="w-full md:w-32 flex items-end">
                             <button id="clearFilters" 
@@ -237,6 +227,14 @@
                                     Clear
                                 </span>
                             </button>
+                        </div>
+                    </div>
+
+                    <!-- Business Vertical Filter Pills -->
+                    <div class="mt-4 pt-4 border-t border-gray-200">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Filter by Business Vertical</label>
+                        <div id="verticalFilters" class="flex flex-wrap gap-2">
+                            <!-- Business verticals will be dynamically generated -->
                         </div>
                     </div>
 
@@ -385,10 +383,12 @@
         // Store all projects data
         const allProjects = {{ projects|tojson }};
         let selectedTags = new Set();
+        let selectedVerticals = new Set();
 
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
             generateTagFilters();
+            generateVerticalFilters();
             attachEventListeners();
             loadBusinessVerticals();
         });
@@ -424,6 +424,55 @@
             });
         }
 
+        // Generate business vertical filter pills
+        function generateVerticalFilters() {
+            const verticalFiltersContainer = document.getElementById('verticalFilters');
+            const verticals = new Set();
+            
+            // Collect all unique business verticals
+            allProjects.forEach(project => {
+                if (project.business_vertical) {
+                    verticals.add(project.business_vertical);
+                }
+            });
+
+            // Create vertical pills with colors
+            const colors = [
+                { bg: 'bg-c24-primary', text: 'text-c24-primary', hover: 'hover:bg-c24-primary' },
+                { bg: 'bg-c24-blue', text: 'text-c24-blue', hover: 'hover:bg-c24-blue' },
+                { bg: 'bg-c24-green', text: 'text-c24-green', hover: 'hover:bg-c24-green' },
+                { bg: 'bg-c24-yellow', text: 'text-c24-yellow', hover: 'hover:bg-c24-yellow' },
+                { bg: 'bg-purple-500', text: 'text-purple-500', hover: 'hover:bg-purple-500' },
+                { bg: 'bg-pink-500', text: 'text-pink-500', hover: 'hover:bg-pink-500' },
+                { bg: 'bg-indigo-500', text: 'text-indigo-500', hover: 'hover:bg-indigo-500' }
+            ];
+
+            const sortedVerticals = Array.from(verticals).sort();
+            sortedVerticals.forEach((vertical, index) => {
+                const color = colors[index % colors.length];
+                const verticalPill = document.createElement('button');
+                verticalPill.className = `vertical-filter px-3 py-1.5 ${color.bg} bg-opacity-20 ${color.text} text-sm font-bold rounded-full ${color.hover} hover:bg-opacity-100 hover:text-white transition`;
+                verticalPill.textContent = vertical;
+                verticalPill.dataset.vertical = vertical;
+                verticalPill.onclick = () => toggleVertical(vertical, verticalPill);
+                verticalFiltersContainer.appendChild(verticalPill);
+            });
+        }
+
+        // Toggle vertical selection
+        function toggleVertical(vertical, element) {
+            if (selectedVerticals.has(vertical)) {
+                selectedVerticals.delete(vertical);
+                element.classList.remove('bg-opacity-100', 'text-white');
+                element.classList.add('bg-opacity-20');
+            } else {
+                selectedVerticals.add(vertical);
+                element.classList.remove('bg-opacity-20');
+                element.classList.add('bg-opacity-100', 'text-white');
+            }
+            filterProjects();
+        }
+
         // Toggle tag selection
         function toggleTag(tag, element) {
             if (selectedTags.has(tag)) {
@@ -441,14 +490,12 @@
         // Attach event listeners
         function attachEventListeners() {
             document.getElementById('searchInput').addEventListener('input', filterProjects);
-            document.getElementById('verticalFilter').addEventListener('change', filterProjects);
             document.getElementById('clearFilters').addEventListener('click', clearAllFilters);
         }
 
         // Main filter function
         function filterProjects() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const verticalFilter = document.getElementById('verticalFilter').value;
 
             const filteredProjects = allProjects.filter(project => {
                 // Search filter - includes name, summary, PM, and tags
@@ -459,8 +506,8 @@
                     project.product_manager.toLowerCase().includes(searchTerm) ||
                     tagsText.includes(searchTerm);
 
-                // Vertical filter
-                const matchesVertical = !verticalFilter || project.business_vertical === verticalFilter;
+                // Vertical filter - matches if no verticals selected OR project's vertical is in selected set
+                const matchesVertical = selectedVerticals.size === 0 || selectedVerticals.has(project.business_vertical);
 
                 // Tag filter
                 const matchesTags = selectedTags.size === 0 || 
@@ -585,7 +632,13 @@
         // Clear all filters
         function clearAllFilters() {
             document.getElementById('searchInput').value = '';
-            document.getElementById('verticalFilter').value = '';
+            
+            // Clear vertical selections
+            selectedVerticals.clear();
+            document.querySelectorAll('.vertical-filter').forEach(vertical => {
+                vertical.classList.remove('bg-opacity-100', 'text-white');
+                vertical.classList.add('bg-opacity-20');
+            });
             
             // Clear tag selections
             selectedTags.clear();
@@ -628,26 +681,6 @@
             }
         }
 
-        // Load business verticals into dropdown filter
-        async function loadBusinessVerticalsDropdown() {
-            try {
-                const response = await fetch('/api/business-verticals');
-                const data = await response.json();
-                const dropdown = document.getElementById('verticalFilter');
-                
-                if (data.verticals && data.verticals.length > 0) {
-                    // Keep the "All Verticals" option and add dynamic ones
-                    data.verticals.forEach(vertical => {
-                        const option = document.createElement('option');
-                        option.value = vertical;
-                        option.textContent = vertical;
-                        dropdown.appendChild(option);
-                    });
-                }
-            } catch (error) {
-                console.error('Error loading business verticals for dropdown:', error);
-            }
-        }
     </script>
 
 </body>
