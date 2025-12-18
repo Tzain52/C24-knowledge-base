@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from models import db, Project
 import os
+from urllib.parse import urlsplit, urlunsplit
 
 app = Flask(__name__)
 app.secret_key = 'cars24-secret-key-change-in-production-12345'
@@ -63,6 +64,18 @@ database_url = os.environ.get('DATABASE_URL', f'sqlite:///{os.path.join(basedir,
 # Render uses postgres:// but SQLAlchemy needs postgresql://
 if database_url.startswith('postgres://'):
     database_url = database_url.replace('postgres://', 'postgresql://', 1)
+
+try:
+    parts = urlsplit(database_url)
+    if parts.password:
+        netloc = parts.netloc.replace(f":{parts.password}@", ":***@")
+        display_database_url = urlunsplit((parts.scheme, netloc, parts.path, parts.query, parts.fragment))
+    else:
+        display_database_url = database_url
+except Exception:
+    display_database_url = database_url
+
+print(f"Using database: {display_database_url}")
 
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
